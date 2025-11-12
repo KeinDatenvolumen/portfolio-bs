@@ -19,18 +19,20 @@ ETC_DIR="$RESTORE_DIR/etc"
 HOME_DIR="$RESTORE_DIR/home"
 USR_LOCAL_DIR="$RESTORE_DIR/usr_local"
 
-echo "Installiere gesicherte Pakete..."
+echo "Installiere Pakete aus Repository..."
+if [ -f "$RESTORE_DIR/packages_install.txt" ]; then
+  sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt-get install -y --allow-downgrades
+fi
+
+echo "Installiere gesicherte Offline-Pakete..."
 shopt -s nullglob
 if [ -d "$DEB_DIR" ]; then
   debs=( "$DEB_DIR"/*.deb )
   if (( ${#debs[@]} )); then
-    if ! sudo apt-get install -y --allow-downgrades "${debs[@]}"; then
-      echo "Fehler bei Installation; versuche fehlende Abhängigkeiten zu lösen..."
+    sudo apt-get install -y --allow-downgrades "${debs[@]}" || {
+      echo "Fehler bei .deb Installation – versuche Reparatur..."
       sudo apt-get -f install -y --allow-downgrades
-      sudo apt-get install -y --allow-downgrades "${debs[@]}" || echo "WARN: Einige Pakete konnten evtl. nicht installiert werden."
-    fi
-  else
-    echo "Keine .deb-Dateien im Backup gefunden."
+    }
   fi
 fi
 shopt -u nullglob
