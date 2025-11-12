@@ -14,6 +14,7 @@ mkdir -p "$DEB_DIR" "$ETC_DIR" "$HOME_BKP_DIR" "$USR_LOCAL_DIR" "$TMP_DIR"
 
 PKG_LIST="$TMP_DIR/packages.txt"
 PKG_REPACK="$TMP_DIR/packages_repack.txt"
+PKG_INSTALL_TXT="$BACKUP_DIR/packages_install.txt"
 
 # Alle installierten Pakete erfassen
 dpkg-query -W -f='${Package} ${Status}\n' | awk '/install ok installed/{print $1}' | sort -u > "$PKG_LIST"
@@ -23,21 +24,26 @@ cp -f "$PKG_LIST" "$BACKUP_DIR/main_packages.txt"
 apt-mark showmanual | sort -u > "$BACKUP_DIR/manual_packages.txt" || true
 
 cd "$DEB_DIR"
+sudo apt update -qq
 
 # Listen für unterschiedliche Behandlung vorbereiten
-> "$PKG_REPACK"
-PKG_INSTALL_TXT="$BACKUP_DIR/packages_install.txt"
 > "$PKG_INSTALL_TXT"
+> "$PKG_REPACK"
 
-echo "Prüfe Paketquellen..."
+echo
+echo "Prüfe Paketverfügbarkeit (nur stable-Repos zählen)..."
 while read -r pkg; do
-  # Prüfen, ob das Paket noch in einer Quelle vorhanden ist
-  if apt-cache madison "$pkg" | grep -q .; then
+  [ -z "$pkg" ] && continue
+
+  list_output=$(apt list -a "$pkg" 2>/dev/null || true)
+
+  # Prüfe, ob das Paket in 'stable' gelistet ist
+  if echo "$list_output" | grep -qi 'stable'; then
     echo "$pkg" >> "$PKG_INSTALL_TXT"
-    echo "Repo: $pkg"
+    echo "Repo (stable): $pkg"
   else
     echo "$pkg" >> "$PKG_REPACK"
-    echo "Offline sichern (repack): $pkg"
+    echo "Offline sichern (nicht stable oder nicht im Repo): $pkg"
   fi
 done < "$PKG_LIST"
 
