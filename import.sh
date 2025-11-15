@@ -21,8 +21,10 @@ USR_LOCAL_DIR="$RESTORE_DIR/usr_local"
 echo "Installiere Pakete aus Repository..."
 sudo apt update -y
 if [ -f "$RESTORE_DIR/packages_install.txt" ]; then
-  sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt-get install -y \
-  && sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt-mark auto
+  sudo apt-get install -y --allow-downgrades "${debs[@]}" || {
+      echo "Fehler bei .deb Installation – versuche Reparatur..."
+      sudo apt-get -f install -y --allow-downgrades
+    }
 fi
 
 echo "Installiere gesicherte Offline-Pakete..."
