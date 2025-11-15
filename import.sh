@@ -21,10 +21,8 @@ USR_LOCAL_DIR="$RESTORE_DIR/usr_local"
 echo "Installiere Pakete aus Repository..."
 sudo apt update -y
 if [ -f "$RESTORE_DIR/packages_install.txt" ]; then
-  sudo apt-get install -y --allow-downgrades "${debs[@]}" || {
-      echo "Fehler bei .deb Installation – versuche Reparatur..."
-      sudo apt-get -f install -y --allow-downgrades
-    }
+  sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt-get install -y \
+  && sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt-mark auto
 fi
 
 echo "Installiere gesicherte Offline-Pakete..."
@@ -32,8 +30,10 @@ shopt -s nullglob
 if [ -d "$DEB_DIR" ]; then
   debs=( "$DEB_DIR"/*.deb )
   if (( ${#debs[@]} )); then
-    sudo dpkg -i "${debs[@]}" || sudo apt-get -f install -y
-    sudo apt-mark auto "${debs[@]}"
+    sudo apt-get install -y --allow-downgrades "${debs[@]}" || {
+      echo "Fehler bei .deb Installation – versuche Reparatur..."
+      sudo apt-get -f install -y --allow-downgrades
+    }
   fi
 fi
 shopt -u nullglob
