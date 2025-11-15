@@ -32,7 +32,7 @@ sudo apt autoremove -y
 > "$PKG_REPACK"
 
 echo
-echo "Prüfe Paketverfügbarkeit (nur stable-Repos zählen)..."
+echo "Prüfe Paketverfügbarkeit (nur trixie-Repos zählen)..."
 while read -r pkg; do
   [ -z "$pkg" ] && continue
 
@@ -41,10 +41,10 @@ while read -r pkg; do
   # Prüfe, ob das Paket in 'stable' gelistet ist
   if echo "$list_output" | grep -qi 'trixie'; then
     echo "$pkg" >> "$PKG_INSTALL_TXT"
-    echo "Repo (stable): $pkg"
+    echo "Repo (trixie): $pkg"
   else
     echo "$pkg" >> "$PKG_REPACK"
-    echo "Offline sichern (nicht stable oder nicht im Repo): $pkg"
+    echo "Offline sichern (nicht im trixie Repo): $pkg"
   fi
 done < "$PKG_LIST"
 
