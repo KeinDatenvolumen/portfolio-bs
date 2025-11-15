@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-IFS=$'\n\t'
 
 BACKUP_DIR="$HOME/debian_backup"
 DEB_DIR="$BACKUP_DIR/debs"
@@ -24,7 +23,9 @@ cp -f "$PKG_LIST" "$BACKUP_DIR/main_packages.txt"
 apt-mark showmanual | sort -u > "$BACKUP_DIR/manual_packages.txt" || true
 
 cd "$DEB_DIR"
-sudo apt update -qq
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt autoremove -y
 
 # Listen für unterschiedliche Behandlung vorbereiten
 > "$PKG_INSTALL_TXT"
@@ -35,10 +36,10 @@ echo "Prüfe Paketverfügbarkeit (nur stable-Repos zählen)..."
 while read -r pkg; do
   [ -z "$pkg" ] && continue
 
-  list_output=$(apt list -a "$pkg" 2>/dev/null || true)
+  list_output=$(apt-cache policy "$pkg" || true)
 
   # Prüfe, ob das Paket in 'stable' gelistet ist
-  if echo "$list_output" | grep -qi 'stable'; then
+  if echo "$list_output" | grep -qi 'trixie'; then
     echo "$pkg" >> "$PKG_INSTALL_TXT"
     echo "Repo (stable): $pkg"
   else
@@ -63,17 +64,16 @@ echo
 echo "Starte Dateisicherungen..."
 
 # Konfigurations- und Benutzerdaten sichern
-rsync -aAXH --numeric-ids \
+rsync -aAXH \
   --exclude='/fstab' \
   --exclude='/machine-id' \
   --exclude='/network/interfaces/*-save' \
-  --exclude='/lightdm/' \
   --exclude='/ssh/' \
   --exclude='/ssh/ssh_host*' \
   /etc/ "$ETC_DIR/"
 
-rsync -aAXH --numeric-ids /home/ "$HOME_BKP_DIR/"
-rsync -aAXH --numeric-ids /usr/local/ "$USR_LOCAL_DIR/"
+rsync -aAXH /home/ "$HOME_BKP_DIR/"
+rsync -aAXH /usr/local/ "$USR_LOCAL_DIR/"
 
 # Archiv erstellen
 tar -C "$BACKUP_DIR" -czf "$BACKUP_TAR" .
