@@ -30,11 +30,8 @@ shopt -s nullglob
 if [ -d "$DEB_DIR" ]; then
   debs=( "$DEB_DIR"/*.deb )
   if (( ${#debs[@]} )); then
-    sudo apt-get install -y --allow-downgrades "${debs[@]}" || {
-      echo "Fehler bei .deb Installation – versuche Reparatur..."
-      sudo apt-get -f install -y --allow-downgrades
-    }
-	sudo apt-mark auto "${debs[@]}"
+    sudo dpkg -i "${debs[@]}" || sudo apt-get -f install -y
+    sudo apt-mark auto "${debs[@]}"
   fi
 fi
 shopt -u nullglob
