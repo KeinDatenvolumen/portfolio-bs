@@ -21,7 +21,7 @@ USR_LOCAL_DIR="$RESTORE_DIR/usr_local"
 echo "Installiere Pakete aus Repository..."
 sudo apt update -y
 if [ -f "$RESTORE_DIR/packages_install.txt" ]; then
-  sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt-get install -y \
+  sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt install -y \
   && sudo xargs -r -a "$RESTORE_DIR/packages_install.txt" apt-mark auto
 fi
 
@@ -30,9 +30,9 @@ shopt -s nullglob
 if [ -d "$DEB_DIR" ]; then
   debs=( "$DEB_DIR"/*.deb )
   if (( ${#debs[@]} )); then
-    sudo apt-get install -y --allow-downgrades "${debs[@]}" || {
+    sudo apt install -y --allow-downgrades "${debs[@]}" || {
       echo "Fehler bei .deb Installation – versuche Reparatur..."
-      sudo apt-get -f install -y --allow-downgrades
+      sudo apt -f install -y --allow-downgrades
     }
   fi
 fi
@@ -74,8 +74,8 @@ if [ -f "/media/sf_Debian/local_packages.txt" ] && [ -f "$RESTORE_DIR/main_packa
   echo "Pakete, die entfernt werden (nur wenn vorhanden):"
   wc -l /media/sf_Debian/to_remove.txt || true
   
-  xargs -r -a /media/sf_Debian/to_remove.txt sudo apt-get purge -y
-  sudo apt-get autoremove -y --purge
+  xargs -r -a /media/sf_Debian/to_remove.txt sudo apt purge -y
+  sudo apt autoremove -y --purge
 fi
 
 sudo apt update
