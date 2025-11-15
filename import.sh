@@ -77,3 +77,5 @@ if [ -f "/media/sf_Debian/local_packages.txt" ] && [ -f "$RESTORE_DIR/main_packa
   xargs -r -a /media/sf_Debian/to_remove.txt sudo apt-get purge -y
   sudo apt-get autoremove -y --purge
 fi
+
+sudo apt update
