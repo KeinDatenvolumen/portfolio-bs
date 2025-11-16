@@ -9,6 +9,10 @@ if [ ! -f "$BACKUP_TAR" ]; then
   exit 1
 fi
 
+if [ -d "$RESTORE_DIR" ]; then
+  sudo rm -rf "$RESTORE_DIR"
+fi
+
 mkdir -p "$RESTORE_DIR"
 echo "Entpacke Backup nach $RESTORE_DIR..."
 tar -xzf "$BACKUP_TAR" -C "$RESTORE_DIR"
