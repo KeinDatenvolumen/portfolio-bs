@@ -9,6 +9,10 @@ USR_LOCAL_DIR="$BACKUP_DIR/usr_local"
 TMP_DIR="$BACKUP_DIR/tmp"
 BACKUP_TAR="/media/sf_Debian/debian_backup.tar.gz"
 
+if [ -d "$BACKUP_DIR" ]; then
+  sudo rm -rf "$BACKUP_DIR"
+fi
+
 mkdir -p "$DEB_DIR" "$ETC_DIR" "$HOME_BKP_DIR" "$USR_LOCAL_DIR" "$TMP_DIR"
 
 PKG_LIST="$TMP_DIR/packages.txt"
