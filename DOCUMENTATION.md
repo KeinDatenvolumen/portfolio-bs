@@ -139,7 +139,7 @@ Der Importprozess folgt einer strukturierten Wiederherstellung, die Schritt für
    - Bei Konflikten wird eine Reparaturinstallation (`apt -f install`) durchgeführt.
 
 5. **Wiederherstellung von Konfiguration und Daten**
-   - `/etc` wird zurückgespielt, jedoch ohne die kritischen Dateien für Benutzer‑ und Systemidentität.
+   - `/etc` wird zurückgespielt, jedoch ohne kritische Dateien wie `passwd`, `group`, `shadow`, `gshadow` sowie systembezogene IDs und SSH‑Host‑Keys.
    - `/home` und `/usr/local` werden vollständig wiederhergestellt.
 
 6. **Wiederherstellung manueller Paketmarkierungen**
@@ -192,7 +192,7 @@ Die wichtigsten Design‑ und Konfigurationsentscheidungen sind bewusst auf Einf
    - Dies erlaubt die Wiederherstellung spezieller oder historischer Software.
 
 5. **Ausschlüsse kritischer Dateien**
-   - Dateien wie `machine-id` und SSH‑Host‑Keys bleiben unangetastet.
+   - Dateien wie `machine-id`, SSH‑Host‑Keys sowie `passwd`, `group`, `shadow`, `gshadow` bleiben unangetastet.
    - Dadurch werden Identitätskonflikte, Netzwerkprobleme und Sicherheitsrisiken vermieden.
 
 6. **Verwendung von `rsync -aAXH`**
@@ -265,7 +265,7 @@ Da die Skripte mit Root‑Rechten arbeiten und sensible Daten sichern, sind folg
 
 - **Zugriffsrechte:** Das Backup enthält potenziell vertrauliche Daten aus `/home` und `/etc`. Es muss geschützt gespeichert und übertragen werden.
 - **SSH‑Schlüssel:** Die Host‑Keys werden nicht wiederhergestellt, um Konflikte zu vermeiden. Benutzer‑SSH‑Schlüssel in `/home` werden jedoch übertragen.
-- **Passwortdateien:** Systemdateien wie `/etc/shadow` werden bewusst ausgeschlossen, um Sicherheitsprobleme zu verhindern.
+- **Benutzer‑ und Passwortdateien:** Systemdateien wie `/etc/passwd`, `/etc/group`, `/etc/shadow` und `/etc/gshadow` werden bewusst ausgeschlossen, um Sicherheitsprobleme zu verhindern.
 - **Datenintegrität:** Das Archiv sollte vor der Wiederherstellung verifiziert werden (z. B. Prüfsumme).
 - **Sudo‑Befehle:** Die Skripte setzen voraus, dass der Benutzer korrekt mit sudo arbeitet. Eine falsche Bedienung kann das System beeinträchtigen.
 
