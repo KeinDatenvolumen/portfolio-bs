@@ -1,4 +1,4 @@
-# Dokumentation – Debian-Backup und Wiederherstellungsskripte (portfolio-bs)
+# Dokumentation – Debian-Backup- und -Wiederherstellungsskripte (portfolio-bs)
 
 ## Inhaltsverzeichnis
 1. [Kurzfassung](#kurzfassung)
@@ -264,7 +264,7 @@ Für den produktiven Einsatz empfiehlt sich ein zusätzlicher manueller Validier
 Da die Skripte mit Root-Rechten arbeiten und sensible Daten sichern, sind folgende Aspekte zu beachten:
 
 - **Zugriffsrechte:** Das Backup enthält potenziell vertrauliche Daten aus `/home` und `/etc`. Es muss geschützt gespeichert und übertragen werden.
-- **SSH-Schlüssel:** Die Host-Keys werden nicht wiederhergestellt, um Konflikte zu vermeiden. Benutzer-SSH-Schlüssel in `/home` werden jedoch übertragen.
+- **SSH-Schlüssel:** Die SSH-Host-Keys werden nicht wiederhergestellt, um Konflikte zu vermeiden. Benutzer-SSH-Schlüssel in `/home` werden jedoch übertragen.
 - **Benutzer- und Passwortdateien:** Systemdateien wie `/etc/passwd`, `/etc/group`, `/etc/shadow` und `/etc/gshadow` werden bewusst ausgeschlossen, um Sicherheitsprobleme zu verhindern.
 - **Datenintegrität:** Das Archiv sollte vor der Wiederherstellung verifiziert werden (z. B. Prüfsumme).
 - **Sudo-Befehle:** Die Skripte setzen voraus, dass der Benutzer korrekt mit sudo arbeitet. Eine falsche Bedienung kann das System beeinträchtigen.
